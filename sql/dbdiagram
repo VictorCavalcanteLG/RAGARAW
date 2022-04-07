@@ -1,0 +1,127 @@
+// Creating tables
+Table Cliente as U{
+  id int [pk, not null, increment] // auto-increment
+  nome varchar(45) [not null]
+  CPF char(11)
+}
+
+enum func{
+  Vendedor
+  Tecnico
+  Supervisor
+}
+
+Table Funcionario {
+  id int [pk, not null, increment]
+  nome varchar
+  codigo char(5)
+  salario float
+  funcao func
+  filial_id int
+}
+
+Table Filial {
+  id int [pk, not null, increment]
+  nome varchar(45) [not null]
+  cidade varchar(45) [not null]
+}
+ 
+Table Produto {
+  id int [pk, not null, increment]
+  nome varchar(45) [not null]
+  codigo char(5) [not null]
+}
+
+Table Estoque {
+  filial_id int
+  produto_id int
+  quantidate int [default: 0]
+  preco float 
+  Indexes {
+    (filial_id, produto_id) [pk]
+  }
+}
+
+Table Venda {
+  id int [pk]
+  filial_id int
+  produto_id int
+  cliente_id int
+  funcionario_id int
+  contrato_id int
+  dataHora datetime
+  Indexes {
+    (filial_id, produto_id) 
+  }
+}
+
+enum tipo_servico {
+  Manutencao
+  Instalacao
+}
+
+Table Contrato {
+  id int [pk, not null, increment]
+  data date
+  servico tipo_servico
+  preco float
+  data_inicio date
+  cliente_id int
+}
+
+Table Servico {
+  id int [pk, not null, increment]
+  data date
+  relatorio_id int
+}
+
+Table Foto {
+  id int [pk, not null, increment]
+  relatorio_id int
+}
+
+Table Documento {
+  id int [pk, not null, increment]
+  relatorio_id int
+}
+
+Table Relatorio {
+  id int [pk, not null, increment]
+  funcionario_id int
+}
+
+Table Funcionarios_Servicos {
+  funcionario_id int
+  servico_id int
+}
+
+
+
+
+Ref: "Cliente"."id" < "Venda"."cliente_id"
+
+Ref: "Funcionario"."id" < "Venda"."funcionario_id"
+
+Ref: "Produto"."id" < "Estoque"."produto_id"
+
+Ref: "Filial"."id" < "Estoque"."filial_id"
+
+Ref: "Relatorio"."id" < "Foto"."relatorio_id"
+
+Ref: "Relatorio"."id" < "Documento"."relatorio_id"
+
+Ref: "Relatorio"."id" - "Servico"."relatorio_id"
+
+Ref: "Servico"."id" < "Funcionarios_Servicos"."servico_id"
+
+Ref: "Funcionario"."id" < "Funcionarios_Servicos"."funcionario_id"
+
+Ref: "Cliente"."id" < "Contrato"."cliente_id"
+
+Ref: "Funcionario"."id" < "Relatorio"."funcionario_id"
+
+Ref: "Filial"."id" < "Funcionario"."filial_id"
+
+Ref: "Contrato"."id" < "Venda"."contrato_id"
+
+Ref: Estoque.(filial_id, produto_id) < Venda.(filial_id, produto_id)
