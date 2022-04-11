@@ -36,3 +36,14 @@ func ListClients() func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, clients)
 	}
 }
+
+func InsertClient() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		fmt.Println("teste")
+		res, err := models.InsertClient("kk", "00000000000")
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+		}
+		fmt.Printf("res: %v\n", res)
+	}
+}

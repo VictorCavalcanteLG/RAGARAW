@@ -17,3 +17,19 @@ func GetClients() (*sql.Rows, error) {
 
 	return rows, nil
 }
+
+func InsertClient(name, cpf string) (sql.Result, error) {
+	db, err := ConnectDatabase()
+	if err != nil {
+		return nil, err
+	}
+
+	query := `INSERT INTO cliente (nome, "CPF") VALUES($1, $2)`
+
+	res, err := db.Exec(query, name, cpf)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

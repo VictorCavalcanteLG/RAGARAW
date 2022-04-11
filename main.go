@@ -8,7 +8,8 @@ import (
 func main() {
 	r := gin.Default()
 
-	r.GET("/", controllers.ListClients())
+	r.GET("/clients", controllers.ListClients())
+	r.POST("/client", controllers.InsertClient())
 
 	r.Run()
 }
