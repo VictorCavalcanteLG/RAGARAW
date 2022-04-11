@@ -1,45 +1,38 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
+	"net/http"
 
 	"example.com/m/v2/models"
+	"github.com/gin-gonic/gin"
 )
 
-func GetClients() (*sql.Rows, error) {
-	db, err := models.ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-
-	query := "select * from cliente"
-
-	rows, err := db.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	//defer rows.Close()
-
-	return rows, nil
+type Client struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+	Cpf  string `json:"cpf"`
 }
 
-func ListClients() {
-	rows, err := GetClients()
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	for rows.Next() {
-		var (
-			id        int
-			nome, cpf string
-		)
-
-		if err := rows.Scan(&id, &nome, &cpf); err != nil {
+func ListClients() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		rows, err := models.GetClients()
+		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
+		defer rows.Close()
 
-		fmt.Println(id, nome, cpf)
+		var clients []Client
+		for rows.Next() {
+			var c Client
+
+			if err := rows.Scan(&c.Id, &c.Name, &c.Cpf); err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
+			clients = append(clients, c)
+		}
+
+		ctx.JSON(http.StatusOK, clients)
 	}
 }
