@@ -10,6 +10,7 @@ func main() {
 
 	r.GET("/clients", controllers.ListClients())
 	r.POST("/client", controllers.InsertClient())
+	r.GET("/client", controllers.GetClient())
 
-	r.Run()
+	r.Run(":3000")
 }

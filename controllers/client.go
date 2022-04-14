@@ -8,42 +8,43 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Client struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-	Cpf  string `json:"cpf"`
-}
-
 func ListClients() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		rows, err := models.GetClients()
+		modelClients, err := models.GetClients()
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
-		defer rows.Close()
 
-		var clients []Client
-		for rows.Next() {
-			var c Client
-
-			if err := rows.Scan(&c.Id, &c.Name, &c.Cpf); err != nil {
-				fmt.Printf("err: %v\n", err)
-			}
-
-			clients = append(clients, c)
-		}
-
-		ctx.JSON(http.StatusOK, clients)
+		ctx.JSON(http.StatusOK, modelClients)
 	}
 }
 
 func InsertClient() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		fmt.Println("teste")
-		res, err := models.InsertClient("kk", "00000000000")
+		var c models.Client
+		ctx.ShouldBindJSON(&c)
+
+		res, err := models.InsertClient(c.Name, c.Cpf)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
-		fmt.Printf("res: %v\n", res)
+
+		rowsAffected, _ := res.RowsAffected()
+		ctx.JSON(http.StatusCreated, gin.H{"rows affected": rowsAffected})
+	}
+}
+
+func GetClient() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		var client models.Client
+		ctx.ShouldBindJSON(&client)
+		fmt.Println(client.Cpf)
+		modelClient, err := models.GetClient(client.Cpf)
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+		}
+		fmt.Println(modelClient)
+
+		ctx.JSON(http.StatusOK, *modelClient)
 	}
 }
