@@ -8,23 +8,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ListClients() func(ctx *gin.Context) {
+func ListEmployees() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		modelClients, err := models.GetClients()
+		modelEmployees, err := models.GetEmployees()
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
 
-		ctx.JSON(http.StatusOK, modelClients)
+		ctx.JSON(http.StatusOK, modelEmployees)
 	}
 }
 
-func InsertClient() func(ctx *gin.Context) {
+func InsertEmployee() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		var c models.Client
-		ctx.ShouldBindJSON(&c)
+		var e models.Employee
+		ctx.ShouldBindJSON(&e)
 
-		res, err := models.InsertClient(c.Name, c.Cpf)
+		res, err := models.InsertEmployee(e)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
@@ -34,16 +34,16 @@ func InsertClient() func(ctx *gin.Context) {
 	}
 }
 
-func GetClient() func(ctx *gin.Context) {
+func GetEmployee() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		var client models.Client
-		ctx.ShouldBindJSON(&client)
+		var employee models.Employee
+		ctx.ShouldBindJSON(&employee)
 
-		modelClient, err := models.GetClient(client.Cpf)
+		modelEmployee, err := models.GetEmployee(employee.Code)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
 
-		ctx.JSON(http.StatusOK, modelClient)
+		ctx.JSON(http.StatusOK, modelEmployee)
 	}
 }

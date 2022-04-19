@@ -73,12 +73,11 @@ func GetClient(cpf string) (*Client, error) {
 	defer row.Close()
 
 	row.Next()
-	fmt.Println(row)
+
 	var c Client
 	if err := row.Scan(&c.Id, &c.Name, &c.Cpf); err != nil {
-		fmt.Println("erro aqui")
 		return nil, err
 	}
-	fmt.Println("aqui 2")
+
 	return &c, nil
 }
