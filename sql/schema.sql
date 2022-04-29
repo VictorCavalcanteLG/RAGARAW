@@ -9,34 +9,35 @@ CREATE TYPE "tipo_servico" AS ENUM (
   'Instalacao'
 );
 
-CREATE TABLE "Cliente" (
+CREATE TABLE "cliente" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "nome" varchar(45) NOT NULL,
   "CPF" char(11)
 );
 
-CREATE TABLE "Funcionario" (
+CREATE TABLE "funcionario" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "nome" varchar,
-  "codigo" char(5),
+  "codigo" varchar UNIQUE,
   "salario" float,
   "funcao" func,
+  "senha" varchar,
   "filial_id" int
 );
 
-CREATE TABLE "Filial" (
+CREATE TABLE "filial" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "nome" varchar(45) NOT NULL,
   "cidade" varchar(45) NOT NULL
 );
 
-CREATE TABLE "Produto" (
+CREATE TABLE "produto" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "nome" varchar(45) NOT NULL,
-  "codigo" char(5) NOT NULL
+  "codigo" varchar UNIQUE NOT NULL
 );
 
-CREATE TABLE "Estoque" (
+CREATE TABLE "estoque" (
   "filial_id" int,
   "produto_id" int,
   "quantidate" int DEFAULT 0,
@@ -44,8 +45,8 @@ CREATE TABLE "Estoque" (
   PRIMARY KEY ("filial_id", "produto_id")
 );
 
-CREATE TABLE "Venda" (
-  "id" int PRIMARY KEY,
+CREATE TABLE "venda" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
   "filial_id" int,
   "produto_id" int,
   "cliente_id" int,
@@ -54,7 +55,7 @@ CREATE TABLE "Venda" (
   "dataHora" datetime
 );
 
-CREATE TABLE "Contrato" (
+CREATE TABLE "contrato" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "data" date,
   "servico" tipo_servico,
@@ -63,58 +64,58 @@ CREATE TABLE "Contrato" (
   "cliente_id" int
 );
 
-CREATE TABLE "Servico" (
+CREATE TABLE "servico" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "data" date,
   "relatorio_id" int
 );
 
-CREATE TABLE "Foto" (
+CREATE TABLE "foto" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "relatorio_id" int
 );
 
-CREATE TABLE "Documento" (
+CREATE TABLE "documento" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "relatorio_id" int
 );
 
-CREATE TABLE "Relatorio" (
+CREATE TABLE "relatorio" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "funcionario_id" int
 );
 
-CREATE TABLE "Funcionarios_Servicos" (
+CREATE TABLE "funcionarios_servicos" (
   "funcionario_id" int,
   "servico_id" int
 );
 
-ALTER TABLE "Venda" ADD FOREIGN KEY ("cliente_id") REFERENCES "Cliente" ("id");
+CREATE INDEX ON "venda" ("filial_id", "produto_id");
 
-ALTER TABLE "Venda" ADD FOREIGN KEY ("funcionario_id") REFERENCES "Funcionario" ("id");
+ALTER TABLE "venda" ADD FOREIGN KEY ("cliente_id") REFERENCES "cliente" ("id");
 
-ALTER TABLE "Estoque" ADD FOREIGN KEY ("produto_id") REFERENCES "Produto" ("id");
+ALTER TABLE "venda" ADD FOREIGN KEY ("funcionario_id") REFERENCES "funcionario" ("id");
 
-ALTER TABLE "Estoque" ADD FOREIGN KEY ("filial_id") REFERENCES "Filial" ("id");
+ALTER TABLE "estoque" ADD FOREIGN KEY ("produto_id") REFERENCES "produto" ("id");
 
-ALTER TABLE "Foto" ADD FOREIGN KEY ("relatorio_id") REFERENCES "Relatorio" ("id");
+ALTER TABLE "estoque" ADD FOREIGN KEY ("filial_id") REFERENCES "filial" ("id");
 
-ALTER TABLE "Documento" ADD FOREIGN KEY ("relatorio_id") REFERENCES "Relatorio" ("id");
+ALTER TABLE "foto" ADD FOREIGN KEY ("relatorio_id") REFERENCES "relatorio" ("id");
 
-ALTER TABLE "Servico" ADD FOREIGN KEY ("relatorio_id") REFERENCES "Relatorio" ("id");
+ALTER TABLE "documento" ADD FOREIGN KEY ("relatorio_id") REFERENCES "relatorio" ("id");
 
-ALTER TABLE "Funcionarios_Servicos" ADD FOREIGN KEY ("servico_id") REFERENCES "Servico" ("id");
+ALTER TABLE "servico" ADD FOREIGN KEY ("relatorio_id") REFERENCES "relatorio" ("id");
 
-ALTER TABLE "Funcionarios_Servicos" ADD FOREIGN KEY ("funcionario_id") REFERENCES "Funcionario" ("id");
+ALTER TABLE "funcionarios_servicos" ADD FOREIGN KEY ("servico_id") REFERENCES "servico" ("id");
 
-ALTER TABLE "Contrato" ADD FOREIGN KEY ("cliente_id") REFERENCES "Cliente" ("id");
+ALTER TABLE "funcionarios_servicos" ADD FOREIGN KEY ("funcionario_id") REFERENCES "funcionario" ("id");
 
-ALTER TABLE "Relatorio" ADD FOREIGN KEY ("funcionario_id") REFERENCES "Funcionario" ("id");
+ALTER TABLE "contrato" ADD FOREIGN KEY ("cliente_id") REFERENCES "cliente" ("id");
 
-ALTER TABLE "Funcionario" ADD FOREIGN KEY ("filial_id") REFERENCES "Filial" ("id");
+ALTER TABLE "relatorio" ADD FOREIGN KEY ("funcionario_id") REFERENCES "funcionario" ("id");
 
-ALTER TABLE "Venda" ADD FOREIGN KEY ("contrato_id") REFERENCES "Contrato" ("id");
+ALTER TABLE "funcionario" ADD FOREIGN KEY ("filial_id") REFERENCES "filial" ("id");
 
-ALTER TABLE "Venda" ADD FOREIGN KEY ("filial_id", "produto_id") REFERENCES "Estoque" ("filial_id", "produto_id");
+ALTER TABLE "venda" ADD FOREIGN KEY ("contrato_id") REFERENCES "contrato" ("id");
 
-CREATE INDEX ON "Venda" ("filial_id", "produto_id");
+ALTER TABLE "venda" ADD FOREIGN KEY ("filial_id", "produto_id") REFERENCES "estoque" ("filial_id", "produto_id");

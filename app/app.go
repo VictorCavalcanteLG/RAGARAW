@@ -1,4 +1,4 @@
-package models
+package app
 
 import (
 	"database/sql"
@@ -15,14 +15,27 @@ const (
 	dbname   = "ragaraw"
 )
 
-func ConnectDatabase() (*sql.DB, error) {
+var db *sql.DB
+
+func ConnectDatabase() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
-	db, err := sql.Open("postgres", psqlInfo)
+	d, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		return nil, err
+		fmt.Printf("err: %v\n", err)
+		panic(err)
 	}
 
-	return db, nil
+	err = d.Ping()
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+		panic(err)
+	}
+
+	db = d
+}
+
+func GetDB() *sql.DB {
+	return db
 }

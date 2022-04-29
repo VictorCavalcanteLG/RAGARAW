@@ -3,6 +3,8 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
+	"example.com/m/v2/app"
 )
 
 type Employee struct {
@@ -15,15 +17,9 @@ type Employee struct {
 }
 
 func GetEmployees() ([]Employee, error) {
-	db, err := ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	query := `select * from funcionario`
 
-	rows, err := db.Query(query)
+	rows, err := app.GetDB().Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -44,16 +40,10 @@ func GetEmployees() ([]Employee, error) {
 }
 
 func InsertEmployee(emp Employee) (sql.Result, error) {
-	db, err := ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	query := `INSERT INTO funcionario (nome, codigo, salario, funcao, filial_id)
 	VALUES($1, $2, $3, $4, $5)`
 
-	res, err := db.Exec(query, emp.Name, emp.Code, emp.Salary, emp.Func, emp.FilialId)
+	res, err := app.GetDB().Exec(query, emp.Name, emp.Code, emp.Salary, emp.Func, emp.FilialId)
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +52,9 @@ func InsertEmployee(emp Employee) (sql.Result, error) {
 }
 
 func GetEmployee(code string) (*Employee, error) {
-	db, err := ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	query := fmt.Sprintf(`select * from funcionario where codigo='%s'`, code)
 
-	row, err := db.Query(query)
+	row, err := app.GetDB().Query(query)
 	if err != nil {
 		return nil, err
 	}

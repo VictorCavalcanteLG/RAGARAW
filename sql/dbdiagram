@@ -1,5 +1,7 @@
+// Script feito no Dbdiagram.io
+
 // Creating tables
-Table Cliente as U{
+Table cliente as U{
   id int [pk, not null, increment] // auto-increment
   nome varchar(45) [not null]
   CPF char(11)
@@ -11,28 +13,29 @@ enum func{
   Supervisor
 }
 
-Table Funcionario {
+Table funcionario {
   id int [pk, not null, increment]
   nome varchar
-  codigo char(5)
+  codigo varchar [unique]
   salario float
   funcao func
+  senha varchar
   filial_id int
 }
 
-Table Filial {
+Table filial {
   id int [pk, not null, increment]
   nome varchar(45) [not null]
   cidade varchar(45) [not null]
 }
  
-Table Produto {
+Table produto {
   id int [pk, not null, increment]
   nome varchar(45) [not null]
-  codigo char(5) [not null]
+  codigo varchar [not null, unique]
 }
 
-Table Estoque {
+Table estoque {
   filial_id int
   produto_id int
   quantidate int [default: 0]
@@ -42,8 +45,8 @@ Table Estoque {
   }
 }
 
-Table Venda {
-  id int [pk]
+Table venda {
+  id int [pk, not null, increment]
   filial_id int
   produto_id int
   cliente_id int
@@ -60,7 +63,7 @@ enum tipo_servico {
   Instalacao
 }
 
-Table Contrato {
+Table contrato {
   id int [pk, not null, increment]
   data date
   servico tipo_servico
@@ -69,28 +72,28 @@ Table Contrato {
   cliente_id int
 }
 
-Table Servico {
+Table servico {
   id int [pk, not null, increment]
   data date
   relatorio_id int
 }
 
-Table Foto {
+Table foto {
   id int [pk, not null, increment]
   relatorio_id int
 }
 
-Table Documento {
+Table documento {
   id int [pk, not null, increment]
   relatorio_id int
 }
 
-Table Relatorio {
+Table relatorio {
   id int [pk, not null, increment]
   funcionario_id int
 }
 
-Table Funcionarios_Servicos {
+Table funcionarios_servicos {
   funcionario_id int
   servico_id int
 }
@@ -98,30 +101,30 @@ Table Funcionarios_Servicos {
 
 
 
-Ref: "Cliente"."id" < "Venda"."cliente_id"
+Ref: "cliente"."id" < "venda"."cliente_id"
 
-Ref: "Funcionario"."id" < "Venda"."funcionario_id"
+Ref: "funcionario"."id" < "venda"."funcionario_id"
 
-Ref: "Produto"."id" < "Estoque"."produto_id"
+Ref: "produto"."id" < "estoque"."produto_id"
 
-Ref: "Filial"."id" < "Estoque"."filial_id"
+Ref: "filial"."id" < "estoque"."filial_id"
 
-Ref: "Relatorio"."id" < "Foto"."relatorio_id"
+Ref: "relatorio"."id" < "foto"."relatorio_id"
 
-Ref: "Relatorio"."id" < "Documento"."relatorio_id"
+Ref: "relatorio"."id" < "documento"."relatorio_id"
 
-Ref: "Relatorio"."id" - "Servico"."relatorio_id"
+Ref: "relatorio"."id" - "servico"."relatorio_id"
 
-Ref: "Servico"."id" < "Funcionarios_Servicos"."servico_id"
+Ref: "servico"."id" < "funcionarios_servicos"."servico_id"
 
-Ref: "Funcionario"."id" < "Funcionarios_Servicos"."funcionario_id"
+Ref: "funcionario"."id" < "funcionarios_servicos"."funcionario_id"
 
-Ref: "Cliente"."id" < "Contrato"."cliente_id"
+Ref: "cliente"."id" < "contrato"."cliente_id"
 
-Ref: "Funcionario"."id" < "Relatorio"."funcionario_id"
+Ref: "funcionario"."id" < "relatorio"."funcionario_id"
 
-Ref: "Filial"."id" < "Funcionario"."filial_id"
+Ref: "filial"."id" < "funcionario"."filial_id"
 
-Ref: "Contrato"."id" < "Venda"."contrato_id"
+Ref: "contrato"."id" < "venda"."contrato_id"
 
-Ref: Estoque.(filial_id, produto_id) < Venda.(filial_id, produto_id)
+Ref: estoque.(filial_id, produto_id) < venda.(filial_id, produto_id)

@@ -3,6 +3,8 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
+	"example.com/m/v2/app"
 )
 
 type Client struct {
@@ -12,15 +14,9 @@ type Client struct {
 }
 
 func GetClients() ([]Client, error) {
-	db, err := ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	query := "select * from cliente"
 
-	rows, err := db.Query(query)
+	rows, err := app.GetDB().Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -41,15 +37,9 @@ func GetClients() ([]Client, error) {
 }
 
 func InsertClient(name, cpf string) (sql.Result, error) {
-	db, err := ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	query := `INSERT INTO cliente (nome, "CPF") VALUES($1, $2)`
 
-	res, err := db.Exec(query, name, cpf)
+	res, err := app.GetDB().Exec(query, name, cpf)
 	if err != nil {
 		return nil, err
 	}
@@ -58,15 +48,9 @@ func InsertClient(name, cpf string) (sql.Result, error) {
 }
 
 func GetClient(cpf string) (*Client, error) {
-	db, err := ConnectDatabase()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	query := fmt.Sprintf(`SELECT * FROM cliente WHERE "CPF"='%s'`, cpf)
 
-	row, err := db.Query(query)
+	row, err := app.GetDB().Query(query)
 	if err != nil {
 		return nil, err
 	}

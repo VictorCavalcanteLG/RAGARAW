@@ -1,11 +1,15 @@
 package main
 
 import (
+	"example.com/m/v2/app"
 	"example.com/m/v2/controllers"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	app.ConnectDatabase()
+
 	r := gin.Default()
 
 	r.GET("/clients", controllers.ListClients())
