@@ -16,7 +16,7 @@ func main() {
 	r.POST("/client", controllers.InsertClient())
 	r.GET("/client", controllers.GetClient())
 	r.GET("/employees", controllers.ListEmployees())
-	r.POST("/employee", controllers.InsertEmployee())
+	r.POST("/employee", controllers.CreateEmployee())
 	r.GET("/employee", controllers.GetEmployee())
 
 	r.Run(":3000")
