@@ -119,3 +119,5 @@ ALTER TABLE "funcionario" ADD FOREIGN KEY ("filial_id") REFERENCES "filial" ("id
 ALTER TABLE "venda" ADD FOREIGN KEY ("contrato_id") REFERENCES "contrato" ("id");
 
 ALTER TABLE "venda" ADD FOREIGN KEY ("filial_id", "produto_id") REFERENCES "estoque" ("filial_id", "produto_id");
+
+alter table funcionario add session_hash varchar;

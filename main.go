@@ -32,7 +32,8 @@ func main() {
 	// r.POST("/client", controllers.InsertClient())
 	// r.GET("/client", controllers.GetClient())
 	private.GET("/employees", controllers.ListEmployees())
-	// r.POST("/employee", controllers.CreateEmployee())
+	private.GET("/logout", controllers.LogoutGetHandler())
+	private.POST("/employee", controllers.CreateEmployee())
 	// r.GET("/employee", controllers.GetEmployee())
 
 	r.Run(":3000")

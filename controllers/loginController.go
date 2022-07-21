@@ -5,6 +5,7 @@ import (
 
 	"example.com/m/v2/globals"
 	"example.com/m/v2/helpers"
+	"example.com/m/v2/models"
 	"github.com/gin-contrib/sessions"
 
 	"log"
@@ -12,11 +13,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-type Login struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
 
 func LoginGetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -38,62 +34,69 @@ func LoginGetHandler() gin.HandlerFunc {
 }
 
 func LoginPostHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
+	return func(ctx *gin.Context) {
+		session := sessions.Default(ctx)
+
 		user := session.Get(globals.Userkey)
 		if user != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"content": "Please logout first"})
+			ctx.JSON(http.StatusBadRequest, gin.H{"content": "Please logout first"})
 			return
 		}
 
-		var l Login
-		err := c.ShouldBindJSON(&l)
+		var userLogin models.Login
+		err := ctx.ShouldBindJSON(&userLogin)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
-			c.JSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
+			ctx.JSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
 			return
 		}
 
-		username := l.Password
-		password := l.Username
-		fmt.Println(username, password)
-
-		if helpers.EmptyUserPass(username, password) {
-			c.JSON(http.StatusBadRequest, gin.H{"content": "Parameters can't be empty"})
+		if helpers.EmptyUserPass(userLogin.Code, userLogin.Password) {
+			ctx.JSON(http.StatusBadRequest, gin.H{"content": "Parameters can't be empty"})
 			return
 		}
 
-		if !helpers.CheckUserPass(username, password) {
-			c.JSON(http.StatusUnauthorized, gin.H{"content": "Incorrect username or password"})
+		userExists, err := userLogin.CheckUserPass(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"content": "Internal error"})
 			return
 		}
 
-		session.Set(globals.Userkey, username)
+		if !userExists {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"content": "Incorrect code or password"})
+			return
+		}
+
+		session.Set(globals.Userkey, userLogin.Code)
 		if err := session.Save(); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"content": "Failed to save session"})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"content": "Failed to save session"})
 			return
 		}
 
-		c.Redirect(http.StatusMovedPermanently, "/dashboard")
+		ctx.JSON(http.StatusMovedPermanently, gin.H{"content": "LOGGED"})
 	}
 }
 
 func LogoutGetHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
+	return func(ctx *gin.Context) {
+		session := sessions.Default(ctx)
+
 		user := session.Get(globals.Userkey)
 		log.Println("logging out user:", user)
+
 		if user == nil {
 			log.Println("Invalid session token")
 			return
 		}
+
 		session.Delete(globals.Userkey)
+
 		if err := session.Save(); err != nil {
 			log.Println("Failed to save session:", err)
 			return
 		}
 
-		c.Redirect(http.StatusMovedPermanently, "/")
+		ctx.JSON(http.StatusMovedPermanently, gin.H{"content": "LOGOUT"})
 	}
 }
 

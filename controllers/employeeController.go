@@ -38,6 +38,11 @@ func CreateEmployee() func(ctx *gin.Context) {
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(e.Password), bcrypt.DefaultCost)
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
+			return
+		}
 
 		e.Password = string(hashedPassword)
 		res, err := models.InsertEmployee(e)
