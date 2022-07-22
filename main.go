@@ -34,6 +34,7 @@ func main() {
 	private.GET("/employees", controllers.ListEmployees())
 	private.GET("/logout", controllers.LogoutGetHandler())
 	private.POST("/employee", controllers.CreateEmployee())
+	private.POST("/product", controllers.InsertProduct())
 	// r.GET("/employee", controllers.GetEmployee())
 
 	r.Run(":3000")
