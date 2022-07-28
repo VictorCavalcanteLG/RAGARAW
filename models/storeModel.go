@@ -7,8 +7,9 @@ import (
 )
 
 type Store struct {
-	Name string `json:"store_name"`
-	City string `json:"city"`
+	IdStore int
+	Name    string `json:"store_name"`
+	City    string `json:"city"`
 }
 
 func InsertStore(s Store) (sql.Result, error) {

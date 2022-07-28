@@ -7,8 +7,9 @@ import (
 )
 
 type Product struct {
-	Product string `json:"product_name"`
-	Code    string `json:"code"`
+	IdProduct int
+	Product   string `json:"product_name"`
+	Code      string `json:"code"`
 }
 
 func InsertProduct(p Product) (sql.Result, error) {
